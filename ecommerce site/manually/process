@@ -1,0 +1,56 @@
+Install firewall
+        yum install firewalld
+        systemctl start firewalld
+        systemctl enable firewalld
+    # to check status
+        systemctl status firewalld
+        firewall-cmd --list-all
+
+#Install database
+        yum install mariadb-server
+        systemctl start mariadb
+        systemctl enable mariadb
+
+#Open firewall port
+        firewall-cmd --permanent --zone=public --add-port=3306/tcp
+        firewall-cmd --reload
+    # check port is aded into rule
+        firewall-cmd --list-all
+
+#Configure database
+        mysql
+        create database shaheen;
+        create user 'shaheen'@'localhost' identified by 'shaheen';
+        grant all privileges on *.* to 'shaheen'@'localhost';
+        flush privileges;
+    #check database
+        show databases;
+
+Install webserver
+        yum install -y httpd php php-mysql
+
+Open firewall port for 80
+        firewall-cmd --permanent --zone=public --add-port=80/tcp
+        firewall-cmd --reload
+    # check port
+        firewall-cmd --list-all
+
+change config to run php rather than html
+        vi /etc/httpd/conf/httpd.conf
+        #change DirectoryIndex to php
+
+Start apache service
+        systemctl start httpd
+        systemctl enable httpd
+
+Download code of webserver
+        yum install git -y
+        git clone https://github.com/kodekloudhub/learning-app-ecommerce.git /var/www/html/
+
+change code configuration to connect with database
+    #search for mysqli
+    <?php
+            $link = mysqli_connect('172.20.1.101', 'ecomuser', 'ecompassword', 'ecomdb');
+            if ($link) {
+            $res = mysqli_query($link, "select * from products;");
+            while ($row = mysqli_fetch_assoc($res)) { ?>
