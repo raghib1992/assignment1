@@ -1,0 +1,33 @@
+-
+  name: maria db and ecommercial app
+  hosts: target2
+  tasks:
+    - name: install required services
+      yum: name={{  item  }} state=installed
+      with_items:
+        - mariadb-server
+        - httpd
+        - php
+        - php-mysql
+        - git
+    - name: start services
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+    - name: start services
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+    - name: create db
+      mariadb_db: name=shaheendb state=present
+    - name: create user
+      mariadb_user:
+        name: shaheendb
+        password: shaheen@123
+        priv: '*.*:ALL'
+        host: '%'
+        state: present
+    - name: get code file
+      command: git clone https://github.com/kodekloudhub/learning-app-ecommerce.git /var/www/html/
